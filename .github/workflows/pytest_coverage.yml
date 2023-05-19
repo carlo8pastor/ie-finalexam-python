@@ -1,0 +1,33 @@
+name: Pytest with Coverage
+
+on:
+  push:
+    branches:
+      - dev
+  schedule:
+    - cron: "0 23 * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run linter
+        run: pylint --fail-under=8 src/
+
+      - name: Run pytest with coverage
+        run: |
+          pytest --cov=src --cov-report=xml
+          pip install codecov
+          codecov
