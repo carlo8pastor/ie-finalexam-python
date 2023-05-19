@@ -3,8 +3,8 @@ from iebank_api.models import Account
 from iebank_api import db, app
 
 
-@pytest.fixture
-def testing_client(scope='module'):
+@pytest.fixture(autouse=True)
+def testing_client():
     db.create_all()
     account = Account('Test Account', '€')
     db.session.add(account)

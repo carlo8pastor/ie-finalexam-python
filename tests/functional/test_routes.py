@@ -1,4 +1,5 @@
 from iebank_api import app
+from iebank_api.models import Account
 import pytest
 
 def test_get_accounts(testing_client):
@@ -29,4 +30,23 @@ def test_create_account(testing_client):
     response = testing_client.post('/accounts', json={'name': 'John Doe', 'currency': '€'})
     assert response.status_code == 200
 
+def test_update_account(testing_client):
+    """
+    GIVEN a Flask application and an existing Account
+    WHEN a PUT request is made to '/accounts/<id>' with a new name
+    THEN check that the response contains the updated name
+    """
+    # Create an account for testing
+    account = Account('John Doe', '€')
+    testing_client.post('/accounts', json={'name': account.name, 'currency': account.currency})
 
+    # Update the account's name
+    new_name = 'Jane Smith'
+    response = testing_client.put(f'/accounts/{account.id}', json={'name': new_name})
+
+    # Retrieve the updated account from the response
+    updated_account = response.json['account']
+
+    # Check that the response contains the updated name
+    assert response.status_code == 200
+    assert updated_account['name'] == new_name
